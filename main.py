@@ -1,6 +1,7 @@
 import json
 from fastapi import FastAPI
 
+
 app = FastAPI()
 
 
@@ -11,15 +12,16 @@ with open('data.json', 'r') as file:
 # print(data['rates']['NOK'])
 
 
-# Support function
 def get_rate_from_data(currency: str):
-    if currency in data['rates']:
+    '''Support function.'''
+    if currency.upper() in data['rates']:
         return data['rates'][currency]
     return None
 
 
 @app.get("/")
-async def get_all():
+async def get_info():
+    '''Return info.'''
     return {'Endpoint': 'Description',
         '/': 'Get info on how to use.',
         '/all': 'List all internal data, including all rates.',
@@ -30,11 +32,13 @@ async def get_all():
 
 @app.get("/all")
 async def get_all():
+    '''Return all data.'''
     return data
 
 
 @app.get("/rate/{currency}")
 async def get_rate(currency: str):
+    '''Return the currency rate.'''
     # Because USD doesn't work for some reason?
     rate = get_rate_from_data(currency)
 
@@ -48,6 +52,7 @@ async def get_rate(currency: str):
 
 @app.get("/convert/{currency1},{currency2},{amount}")
 async def convert_currency(currency1: str, currency2: str, amount: int):
+    '''Convert between currencies.'''
     rate1 = get_rate_from_data(currency1)
     rate2 = get_rate_from_data(currency2)
     in_usd = amount / rate1
